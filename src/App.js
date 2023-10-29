@@ -1,53 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
-import React, { useState, useEffect } from 'react';
-import Name from './components/Name';
+import logo from "./logo.svg";
+import "./App.css";
+import React, { useState, useEffect } from "react";
+import Animal from "./components/Animal";
+import Web3 from "web3";
 
 function App() {
+  const [name, setName] = useState("");
+  const [animal, setAnimal] = useState("");
+  const [count, setCount] = useState(0);
+  const [render, setRender] = useState(false);
+  const [web3, setWeb3] = useState(null);
+
+  const handleAnimalValue = (animal) => {
+    console.log("Received value from Name component:", animal);
+    setAnimal(animal);
+  };
+
+  function conditional() {
+    setRender((prevState) => !prevState);
+  }
+
+  useEffect(() => {
+
+    async function connectToEthereum() {
+      if (typeof window.ethereum != "undefined") {
+        try {
+          await window.ethereum.request({method: "eth_requestAccounts"});
+          const web3Instance = new Web3(window.ethereum);
+          setWeb3(web3Instance);
+        }
+        catch (error) {
+          console.error("Failed to connect to Ethereum", error);
+        }
+      } else {
+        console.log("Please install compatible browser extension");
+      }
+    }
+
+    connectToEthereum();
 
 
-const [name, setName ] = useState("");
-const [fruit, setFruit] = useState("");
-const [count, setCount] = useState(0);
-const [render, setRender] = useState(false);
+    setName("hello");
+ 
 
-const handleAppleValue = (value) => {
-  console.log("Received value from Name component:", value);
-  setFruit(value);
-}
+    const test = setInterval(() => {
+      console.log("Hi");
+      setCount((prevCount) => prevCount + 1);
 
-function conditional() {
-
-  setRender((prevState) => !prevState);
-
-}
-
-
-useEffect(() => {
-  setName("hello");
-
-  const test = setInterval(() =>{
-
-    console.log("Hi");
-    setCount(prevCount => prevCount + 1);
-
-    console.log(count);
-    
-    }, 1000);  
+      console.log(count);
+    }, 1000);
 
     return () => clearInterval(test);
-    
-}, [count]);
+  }, [count]);
 
   return (
     <div className="App">
       <header className="App-header">
-
-      <Name nameValue = {name} onAppleValue={handleAppleValue} />
-      <p>{fruit}</p>
-      {render && <p>{count}</p> }
-      <button onClick = {() => conditional()}>Show Count </button>
-
+        <Animal nameValue={name} onAnimalValue={handleAnimalValue} />
+        <p>{animal}</p>
+        {render && <p>{count}</p>}
+        <button onClick={() => conditional()}>Show Count </button>
       </header>
     </div>
   );
